@@ -1,0 +1,26 @@
+﻿@model WebApi.AuthServer.Models.LoginModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+@Html.AntiForgeryToken()
+<form asp-action="Login" method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="Username"></label>
+        <input asp-for="Username" type="text" name="username"/>
+        <span asp-validation-for="Username"></span>
+    </div>
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" name="password"/>
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div>
+        <input type="submit" value="Login" />
+    </div>
+</form>
+
+

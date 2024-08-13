@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+      <PackageReference Include="OpenIddict.AspNetCore" Version="5.6.0" />
+      <PackageReference Include="Quartz.AspNetCore" Version="3.12.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Order\Order.csproj" />
+      <ProjectReference Include="..\Product\Product.csproj" />
+      <ProjectReference Include="..\Table\Table.csproj" />
+      <ProjectReference Include="..\User\User.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Migrations\20240619185659_Init.cs" />
+      <Compile Remove="Migrations\20240619185659_Init.Designer.cs" />
+    </ItemGroup>
+
+</Project>
