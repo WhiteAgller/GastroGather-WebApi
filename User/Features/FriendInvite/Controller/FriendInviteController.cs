@@ -24,14 +24,20 @@ public class FriendInviteController : ApiControllerBase
         return await Mediator.Send(query);
     }
     
-    [HttpGet("GetAllInvitesByUserId")]
-    public async Task<ActionResult<PaginatedList<FriendInviteDto>>> GetAllFriendInvitesByUserOrderId([FromQuery] GetAllFriendInvitesByUserIdQuery query)
-    {
-        return await Mediator.Send(query);
-    }
-    
     [HttpPost]
     public async Task<ActionResult<int>> CreateFriendInvite([FromBody]CreateFriendInviteCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("Accept")]
+    public async Task<ActionResult<FriendInviteDto>> AcceptFriendInvite([FromQuery] AcceptFriendInviteCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+    
+    [HttpPut("Decline")]
+    public async Task<ActionResult<FriendInviteDto>> DeclineFriendInvite([FromQuery] DeclineFriendInviteCommand command)
     {
         return await Mediator.Send(command);
     }

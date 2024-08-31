@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using Common.Exceptions;
 using Common.Interfaces.IRepositories.User;
 using Common.Mappings;
 using FluentValidation;
 using MediatR;
-using User.Features.Invite.Dtos;
+using User.Features.GroupInvite.Dtos;
 
-namespace User.Features.Invite;
+namespace User.Features.GroupInvite;
 
-public class UpdateInviteCommand : UpdateInviteRequestBody, IRequest<InviteDto>, IMapFrom<Domain.Invite>
+public class UpdateInviteCommand : UpdateInviteRequestBody, IRequest<GroupInviteDto>, IMapFrom<Domain.GroupInvite>
 {
     public int Id { get; set; }
     
@@ -16,7 +15,7 @@ public class UpdateInviteCommand : UpdateInviteRequestBody, IRequest<InviteDto>,
     {
         public Mapping()
         {
-            CreateMap<Domain.Invite, UpdateInviteCommand>().ReverseMap();
+            CreateMap<Domain.GroupInvite, UpdateInviteCommand>().ReverseMap();
             CreateMap<UpdateInviteCommand, UpdateInviteRequestBody>().ReverseMap()
                 .ForMember(x => x.Id, y => y.Ignore());
         }
@@ -45,22 +44,22 @@ public class UpdateInviteCommandValidator : AbstractValidator<UpdateInviteComman
     }
 }
 
-internal sealed class UpdateOrderCommandHandler : IRequestHandler<UpdateInviteCommand, InviteDto>
+internal sealed class UpdateOrderCommandHandler : IRequestHandler<UpdateInviteCommand, GroupInviteDto>
 {
-    private readonly IInviteRepository<Domain.Invite> _repository;
+    private readonly IGroupInviteRepository<Domain.GroupInvite> _repository;
     private readonly IMapper _mapper;
 
-    public UpdateOrderCommandHandler(IInviteRepository<Domain.Invite> repository, IMapper mapper)
+    public UpdateOrderCommandHandler(IGroupInviteRepository<Domain.GroupInvite> repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
     }
     
-    public async Task<InviteDto> Handle(UpdateInviteCommand request, CancellationToken cancellationToken)
+    public async Task<GroupInviteDto> Handle(UpdateInviteCommand request, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
         var newEntity = _mapper.Map(request, entity);
         var updatedEntity = await _repository.UpdateAsync(newEntity, cancellationToken);
-        return _mapper.Map<User.Domain.Invite, InviteDto>(updatedEntity);
+        return _mapper.Map<Domain.GroupInvite, GroupInviteDto>(updatedEntity);
     }
 }

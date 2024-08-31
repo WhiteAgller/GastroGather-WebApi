@@ -7,11 +7,13 @@ using Infrastructure.Repositories.Order;
 using Infrastructure.Repositories.Product;
 using Infrastructure.Repositories.Table;
 using Infrastructure.Repositories.User;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
+using OpenIddict.Client.AspNetCore;
 using Order.Domain;
 using Quartz;
 using User.Domain;
@@ -37,8 +39,9 @@ public static class Setup
         
         // User
         services.AddScoped<IGroupRepository<Group>, GroupRepository<Group>>();
-        services.AddScoped<IInviteRepository<Invite>, InviteRepository<Invite>>();
+        services.AddScoped<IGroupInviteRepository<GroupInvite>, GroupGroupInviteRepository<GroupInvite>>();
         services.AddScoped<IFriendInviteRepository<FriendInvite>, FriendInviteRepository<FriendInvite>>();
+        services.AddScoped<IUserRepository<User.Domain.User>, UserRepository<User.Domain.User>>();
         
         // Order
         services.AddScoped<IOrderItemRepository<OrderItem>, OrderItemRepository<OrderItem>>();
@@ -56,7 +59,7 @@ public static class Setup
         });
         
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
-        
+
         services.AddOpenIddict()
             .AddCore(options =>
             {
@@ -74,9 +77,11 @@ public static class Setup
                 options.UseAspNetCore()
                     .EnableStatusCodePagesIntegration()
                     .EnableRedirectionEndpointPassthrough();
-                
+
                 options.UseSystemNetHttp()
                     .SetProductInformation(typeof(Setup).Assembly);
+
+                options.SetRedirectionEndpointUris("callback/login/ahoj");
 
                 options.UseWebProviders()
                     .AddGitHub(options =>
@@ -89,9 +94,9 @@ public static class Setup
                     .AddGoogle(options =>
                     {
                         options
-                        .SetClientId("c4ade52327b01ddacff3")
-                         .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
-                         .SetRedirectUri("callback/login/google");
+                            .SetClientId("c4ade52327b01ddacff3")
+                            .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
+                            .SetRedirectUri("callback/login/google");
                     });
             })
             .AddServer(options =>
@@ -99,24 +104,36 @@ public static class Setup
                 options.SetAuthorizationEndpointUris("connect/authorize")
                     .SetLogoutEndpointUris("connect/logout")
                     .SetTokenEndpointUris("connect/token")
-                    .SetUserinfoEndpointUris("connect/userinfo");
-                
-                options.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile, OpenIddictConstants.Scopes.Roles);
+                    .SetUserinfoEndpointUris("api/connect/userinfo")
+                    .SetIssuer("https://localhost:7054/");
+
+                options.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile,
+                    OpenIddictConstants.Scopes.Roles, OpenIddictConstants.Scopes.OpenId);
 
                 options.AllowAuthorizationCodeFlow()
                     .AllowRefreshTokenFlow();
 
                 options.AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
-                
+
                 options.UseAspNetCore()
                     .EnableAuthorizationEndpointPassthrough()
                     .EnableLogoutEndpointPassthrough()
                     .EnableStatusCodePagesIntegration()
                     .EnableTokenEndpointPassthrough();
+                
+                options.RequireProofKeyForCodeExchange();
+            })
+
+            .AddValidation(options =>
+            {
+                // Import the configuration from the local OpenIddict server instance.
+                options.UseLocalServer();
+
+                // Register the ASP.NET Core host.
+                options.UseAspNetCore();
             });
         
-      
         services.AddIdentity<User.Domain.User, IdentityRole>(options =>
         {
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+#";
@@ -125,7 +142,8 @@ public static class Setup
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.Password.RequireNonAlphanumeric = false;
-            options.User.RequireUniqueEmail = false;
+            options.Password.RequiredLength = 1;
+            options.User.RequireUniqueEmail = true;
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();

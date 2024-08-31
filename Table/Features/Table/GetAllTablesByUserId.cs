@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Common.Interfaces;
 using Common.Interfaces.IRepositories.Table;
 using Common.Mappings;
 using Common.Models;
@@ -11,8 +12,6 @@ namespace Table.Features.Table;
 
 public class GetAllTablesByUserIdQuery : IRequest<PaginatedList<TableDto>>
 {
-    public string Username { get; set; }
-    
     public int PageNumber { get; set; } = 1;
     
     public int PageSize { get; set; } = 10;
@@ -22,9 +21,6 @@ public class GetAllTablesByUserIdQueryValidator : AbstractValidator<GetAllTables
 {
     public GetAllTablesByUserIdQueryValidator()
     {
-        RuleFor(x => x.Username)
-            .NotEmpty();
-        
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
         
@@ -37,17 +33,20 @@ internal sealed class GetAllTablesByUserIdQueryRequestHandler : IRequestHandler<
 {
     private readonly ITableRepository<Domain.Table> _repository;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetAllTablesByUserIdQueryRequestHandler(ITableRepository<Domain.Table> repository, IMapper mapper)
+    public GetAllTablesByUserIdQueryRequestHandler(ITableRepository<Domain.Table> repository, IMapper mapper, ICurrentUserService currentUser)
     {
         _repository = repository;
         _mapper = mapper;
+        _currentUser = currentUser;
     }
 
     public async Task<PaginatedList<TableDto>> Handle(GetAllTablesByUserIdQuery request,
         CancellationToken cancellationToken)
     {
-        return await _repository.GetAllTablesByUserName(request.Username, request.PageNumber, request.PageSize)
+        var userName = _currentUser.UserId;
+        return await _repository.GetAllTablesByUserName(userName!, request.PageNumber, request.PageSize)
             .ProjectTo<TableDto>(_mapper.ConfigurationProvider)
             .PaginatedListAsync(request.PageNumber, request.PageSize);
     }

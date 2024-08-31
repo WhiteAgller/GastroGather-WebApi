@@ -3,7 +3,6 @@ using Common.Interfaces.IRepositories.User;
 using FluentValidation;
 using MediatR;
 using User.Features.FriendInvite.Dtos;
-using User.Features.Invite.Dtos;
 
 namespace User.Features.FriendInvite;
 

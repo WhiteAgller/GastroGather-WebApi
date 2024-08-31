@@ -6,17 +6,14 @@ namespace User.Features.FriendInvite;
 
 public class CreateFriendInviteCommand : IRequest<int>
 {
-    public string UserId { get; set; }
-    public string FriendUnique { get; set; }
+    public string FriendsUsername { get; set; } = null!;
 }
 
 public class CreateFriendInviteValidator : AbstractValidator<CreateFriendInviteCommand>
 {
     public CreateFriendInviteValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty();
-        RuleFor(x => x.FriendUnique)
+        RuleFor(x => x.FriendsUsername)
             .NotEmpty();
     }
 }
@@ -34,8 +31,7 @@ internal sealed class CreateFriendInviteCommandHandler : IRequestHandler<CreateF
     {
         var entity = new Domain.FriendInvite()
         {
-            UserId = request.UserId,
-            FriendUnique = request.FriendUnique,
+            FriendsUsername = request.FriendsUsername,
             InvitationAccepted = false
         };
         return await _repository.CreateAsync(entity, cancellationToken);

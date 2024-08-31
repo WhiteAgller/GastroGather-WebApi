@@ -3,11 +3,11 @@ using Common.Exceptions;
 using Common.Interfaces.IRepositories.User;
 using FluentValidation;
 using MediatR;
-using User.Features.Invite.Dtos;
+using User.Features.GroupInvite.Dtos;
 
 namespace User.Features.Invite;
 
-public class GetInviteQuery : IRequest<InviteDto>
+public class GetInviteQuery : IRequest<GroupInviteDto>
 {
     public int Id { get; set; }
 }
@@ -21,20 +21,20 @@ public class GetInviteQueryValidator : AbstractValidator<GetInviteQuery>
     }
 }
 
-internal sealed class GetInviteQueryHandler : IRequestHandler<GetInviteQuery, InviteDto>
+internal sealed class GetInviteQueryHandler : IRequestHandler<GetInviteQuery, GroupInviteDto>
 {
-    private readonly IInviteRepository<Domain.Invite> _repository;
+    private readonly IGroupInviteRepository<Domain.GroupInvite> _repository;
     private readonly IMapper _mapper;
 
-    public GetInviteQueryHandler(IInviteRepository<Domain.Invite> repository, IMapper mapper)
+    public GetInviteQueryHandler(IGroupInviteRepository<Domain.GroupInvite> repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
     }
 
-    public async Task<InviteDto> Handle(GetInviteQuery request, CancellationToken cancellationToken)
+    public async Task<GroupInviteDto> Handle(GetInviteQuery request, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
-        return _mapper.Map<Domain.Invite, InviteDto>(entity);
+        return _mapper.Map<Domain.GroupInvite, GroupInviteDto>(entity);
     }
 }

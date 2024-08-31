@@ -40,16 +40,24 @@ public class Worker : IHostedService
             {
                 ClientId = "my-client-id",
                 DisplayName = "My Client Application",
-                RedirectUris = { new Uri("https://localhost:7054/callback/login/test") },
+                ConsentType = OpenIddictConstants.ConsentTypes.Explicit,
+                ClientType = OpenIddictConstants.ClientTypes.Public,
+                RedirectUris = { new Uri("http://localhost:8100")},
                 Permissions =
                 {
                     OpenIddictConstants.Permissions.Endpoints.Authorization,
+                    OpenIddictConstants.Permissions.Endpoints.Logout,
                     OpenIddictConstants.Permissions.Endpoints.Token,
                     OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                     OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                    OpenIddictConstants.Permissions.ResponseTypes.Code,
                     OpenIddictConstants.Permissions.Scopes.Email,
                     OpenIddictConstants.Permissions.Scopes.Profile,
-                    OpenIddictConstants.Permissions.ResponseTypes.Code
+                    OpenIddictConstants.Permissions.Scopes.Roles
+                },
+                Requirements =
+                {
+                    OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange
                 }
             }, cancellationToken);
         }

@@ -6,20 +6,20 @@ using Common.Mappings;
 using Common.Models;
 using FluentValidation;
 using MediatR;
-using User.Features.Group.Dtos;
+using User.Features.User.Dtos;
 
 namespace User.Features.Group;
 
-public class GetGroupsByUserIdQuery : IRequest<PaginatedList<GroupDto>>
+public class GetAllGroupInvitesQuery : IRequest<PaginatedList<UserDto>>
 {
     public int PageNumber { get; set; } = 1;
-
+    
     public int PageSize { get; set; } = 10;
 }
 
-public class GetGroupsByUserIdQueryValidator : AbstractValidator<GetGroupsByUserIdQuery>
+public class GetAllGroupsInvitesQueryValidator : AbstractValidator<GetAllGroupInvitesQuery>
 {
-    public GetGroupsByUserIdQueryValidator()
+    public GetAllGroupsInvitesQueryValidator()
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
@@ -29,24 +29,25 @@ public class GetGroupsByUserIdQueryValidator : AbstractValidator<GetGroupsByUser
     }
 }
 
-internal sealed class GetGroupsByUserIdRequestHandler : IRequestHandler<GetGroupsByUserIdQuery, PaginatedList<GroupDto>>
+internal sealed class
+    GetAllGroupInvitesQueryHandler : IRequestHandler<GetAllGroupInvitesQuery, PaginatedList<UserDto>>
 {
-    private readonly IGroupRepository<Domain.Group> _repository;
+    private readonly IUserRepository<Domain.User> _repository;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUser;
 
-    public GetGroupsByUserIdRequestHandler(IMapper mapper, ICurrentUserService currentUser, IGroupRepository<Domain.Group> repository)
+    public GetAllGroupInvitesQueryHandler(IUserRepository<Domain.User> repository, IMapper mapper, ICurrentUserService currentUser)
     {
+        _repository = repository;
         _mapper = mapper;
         _currentUser = currentUser;
-        _repository = repository;
     }
 
-    public async Task<PaginatedList<GroupDto>> Handle(GetGroupsByUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<UserDto>> Handle(GetAllGroupInvitesQuery request, CancellationToken cancellationToken)
     {
         var user = _currentUser.UserId;
-        return await _repository.GetAllByUserName(user, request.PageNumber, request.PageSize)
-            .ProjectTo<GroupDto>(_mapper.ConfigurationProvider)
+        return await _repository.GetAllGroupInvites(user, request.PageNumber, request.PageSize)
+            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .PaginatedListAsync(request.PageNumber, request.PageSize);
     }
 }

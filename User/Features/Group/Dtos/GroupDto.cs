@@ -10,7 +10,7 @@ public class GroupDto : IMapFrom<Domain.Group>
     public int MaxNumberOfPeople { get; set; }
     public String AdminUserId { get; set; } = null!;
     public List<Domain.User> Users { get; set; } = new List<Domain.User>();
-    public List<Domain.Invite> Invites { get; set; } = new List<Domain.Invite>();
+    public List<Domain.GroupInvite> Invites { get; set; } = new List<Domain.GroupInvite>();
     
     private class Mapping : Profile
     {

@@ -3,13 +3,13 @@ using Common.Mappings;
 
 namespace User.Features.FriendInvite.Dtos;
 
-public class FriendInviteDto : IMapFrom<User.Domain.Invite>
+public class FriendInviteDto : IMapFrom<Domain.GroupInvite>
 {
     public int Id { get; set; }
     
-    public string UserId { get; set; }
+    public string CreatedBy { get; set; }
     
-    public string FriendUnique { get; set; }
+    public string FriendsUsername { get; set; }
     
     public bool InvitationAccepted { get; set; }
     
@@ -17,7 +17,7 @@ public class FriendInviteDto : IMapFrom<User.Domain.Invite>
     {
         public Mapping()
         {
-            CreateMap<User.Domain.FriendInvite, FriendInviteDto>().ReverseMap();
+            CreateMap<Domain.FriendInvite, FriendInviteDto>().ReverseMap();
         }
     }
 }

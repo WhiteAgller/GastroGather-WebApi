@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using Common.Mappings;
 
-namespace User.Features.Invite.Dtos;
+namespace User.Features.GroupInvite.Dtos;
 
-public class InviteDto : IMapFrom<User.Domain.Invite>
+public class GroupInviteDto : IMapFrom<Domain.GroupInvite>
 {
     public int Id { get; set; }
     
-    public string UserId { get; set; }
+    public string CreatedBy { get; set; }
+    
+    public string FriendsUsername { get; set; }
     
     public int GroupId { get; set; }
     
@@ -17,7 +19,7 @@ public class InviteDto : IMapFrom<User.Domain.Invite>
     {
         public Mapping()
         {
-            CreateMap<User.Domain.Invite, InviteDto>().ReverseMap();
+            CreateMap<Domain.GroupInvite, GroupInviteDto>().ReverseMap();
         }
     }
 }

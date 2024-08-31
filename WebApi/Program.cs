@@ -18,7 +18,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder.WithOrigins("http://localhost:8100")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -101,7 +102,10 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(setup =>
+    {
+        setup.OAuthUsePkce();
+    });
 }
 app.UseHttpsRedirection();
 

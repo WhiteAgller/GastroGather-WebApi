@@ -9,9 +9,9 @@
 <form asp-action="Login" method="post">
     @Html.AntiForgeryToken()
     <div>
-        <label asp-for="Username"></label>
-        <input asp-for="Username" type="text" name="username"/>
-        <span asp-validation-for="Username"></span>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" type="text" name="email"/>
+        <span asp-validation-for="Email"></span>
     </div>
     <div>
         <label asp-for="Password"></label>

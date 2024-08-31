@@ -650,24 +650,20 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("FriendUnique")
+                    b.Property<string>("FriendsUsername")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("InvitationAccepted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("FriendUnique");
+                    b.HasIndex("CreatedBy");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("FriendsUsername");
 
-                    b.ToTable("FriendInvite");
+                    b.ToTable("FriendInvites");
                 });
 
             modelBuilder.Entity("User.Domain.Group", b =>
@@ -678,7 +674,7 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AdminUserId")
+                    b.Property<string>("AdminUserName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -694,11 +690,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("MaxNumberOfPeople")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -709,7 +700,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("User.Domain.Invite", b =>
+            modelBuilder.Entity("User.Domain.GroupInvite", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -721,6 +712,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FriendsUsername")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("GroupId")
                         .HasColumnType("integer");
 
@@ -729,26 +724,20 @@ namespace Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("FriendsUsername");
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Invites");
+                    b.ToTable("GroupInvites");
                 });
 
             modelBuilder.Entity("User.Domain.User", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("User");
                 });
@@ -898,15 +887,15 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("User.Domain.FriendInvite", b =>
                 {
-                    b.HasOne("User.Domain.User", "Friend")
-                        .WithMany()
-                        .HasForeignKey("FriendUnique")
+                    b.HasOne("User.Domain.User", "User")
+                        .WithMany("FriendInvitesSent")
+                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User.Domain.User", "User")
-                        .WithMany("FriendInvites")
-                        .HasForeignKey("UserId")
+                    b.HasOne("User.Domain.User", "Friend")
+                        .WithMany("FriendInvitesReceived")
+                        .HasForeignKey("FriendsUsername")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -915,19 +904,27 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("User.Domain.Invite", b =>
+            modelBuilder.Entity("User.Domain.GroupInvite", b =>
                 {
-                    b.HasOne("User.Domain.Group", "Group")
+                    b.HasOne("User.Domain.User", "User")
                         .WithMany("Invites")
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("User.Domain.User", "Friend")
+                        .WithMany()
+                        .HasForeignKey("FriendsUsername")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("User.Domain.Group", "Group")
+                        .WithMany("GroupInvites")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User.Domain.User", "User")
-                        .WithMany("Invites")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Friend");
 
                     b.Navigation("Group");
 
@@ -973,14 +970,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("User.Domain.Group", b =>
                 {
-                    b.Navigation("Invites");
+                    b.Navigation("GroupInvites");
 
                     b.Navigation("Tables");
                 });
 
             modelBuilder.Entity("User.Domain.User", b =>
                 {
-                    b.Navigation("FriendInvites");
+                    b.Navigation("FriendInvitesReceived");
+
+                    b.Navigation("FriendInvitesSent");
 
                     b.Navigation("Invites");
 

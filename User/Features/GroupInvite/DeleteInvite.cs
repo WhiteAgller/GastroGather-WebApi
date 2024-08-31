@@ -21,9 +21,9 @@ public class DeleteInviteValidator : AbstractValidator<DeleteInviteCommand>
 
 public class DeleteInviteCommandHandler : IRequestHandler<DeleteInviteCommand, Task>
 {
-    private readonly IInviteRepository<Domain.Invite> _repository;
+    private readonly IGroupInviteRepository<Domain.GroupInvite> _repository;
 
-    public DeleteInviteCommandHandler(IInviteRepository<Domain.Invite> repository)
+    public DeleteInviteCommandHandler(IGroupInviteRepository<Domain.GroupInvite> repository)
     {
         _repository = repository;
     }

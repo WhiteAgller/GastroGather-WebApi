@@ -24,7 +24,7 @@ public class TableRepository<TEntity> : BaseRepository<TEntity>, ITableRepositor
     {
         return (IQueryable<TEntity>)_dbSet
             .OfType<global::Table.Domain.Table>()
-            .Where(x => (x.Group as Group)!.Invites
+            .Where(x => (x.Group as Group)!.GroupInvites
                 .Where(y => y.InvitationAccepted)
                 .Any(z => z.CreatedBy == username))
             .Skip((pageNumber - 1) * pageSize)

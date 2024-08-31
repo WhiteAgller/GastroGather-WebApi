@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common;
 using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Table.Features.Table.Dtos;
 

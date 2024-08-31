@@ -1,15 +1,13 @@
-﻿using Common;
-using Common.BaseEntity;
+﻿using System.Linq.Expressions;
 using Common.Exceptions;
 using Common.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Infrastructure.Repositories;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
-    private readonly ApplicationDbContext _context;
+    protected readonly ApplicationDbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
 
     public BaseRepository(ApplicationDbContext context)
@@ -54,14 +52,18 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public IQueryable<TEntity> GetAllByUserName(string username, int pageNumber, int pageSize)
     {
-        var propertyInfo = typeof(TEntity).GetProperty("CreatedBy");
-        if (propertyInfo != null)
-        {
-            return _dbSet
-                .Where(x => propertyInfo.GetValue(x)!.ToString() == username)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-        }
-        return Enumerable.Empty<TEntity>().AsQueryable();
+        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        var property = Expression.Property(parameter, "CreatedBy");
+        
+        var usernameValue = Expression.Constant(username, typeof(string));
+        var equality = Expression.Equal(property, usernameValue);
+
+        var lambda = Expression.Lambda<Func<TEntity, bool>>(equality, parameter);
+
+        return _dbSet
+            .Where(lambda)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize);
     }
+
 }

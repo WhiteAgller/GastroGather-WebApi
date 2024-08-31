@@ -4,12 +4,15 @@ using Common.Interfaces.IEntities;
 
 namespace User.Domain;
 
-public class Invite : BaseEntity<int>, IInvite
+public class GroupInvite : BaseEntity<int>, IInvite
 {
-    public string UserId { get; set; }
-    
-    [ForeignKey(nameof(UserId))]
+    [ForeignKey(nameof(CreatedBy))]
     public User User { get; set; }
+    
+    public string FriendsUsername { get; set; }
+    
+    [ForeignKey(nameof(FriendsUsername))]
+    public User Friend { get; set; }
     
     public int GroupId { get; set; }
     

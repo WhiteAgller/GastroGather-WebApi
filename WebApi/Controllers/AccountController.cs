@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AuthServer.Models;
@@ -26,7 +27,8 @@ public class AccountController : Controller
         while (!userNameAlreadyExists || numberOfAttempts > 10)
         {
             var randomNumber = RandomNumberGenerator.GetInt32(1000, 9999);
-            user = new User.Domain.User { UserName = $"{model.Username}#{randomNumber}", Email = model.Email};
+            var name = $"{model.Username}#{randomNumber}";
+            user = new User.Domain.User { Id = name, UserName = $"{model.Username}#{randomNumber}", Email = model.Email};
             userNameAlreadyExists = _userManager.FindByNameAsync(user.UserName) != null;
             numberOfAttempts++;
         }
@@ -41,14 +43,14 @@ public class AccountController : Controller
         return BadRequest(result.Errors);
     }
     
-    [HttpGet("~/login")]
+    [HttpGet("login")]
     public IActionResult Login(string returnUrl)
     {
         ViewBag.ReturnUrl = returnUrl;
         return View(new LoginModel());
     }
 
-    [HttpPost("~/login")]
+    [HttpPost("login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModel model, string returnUrl)
     {
@@ -64,7 +66,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, lockoutOnFailure: true);
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, lockoutOnFailure: true);
         if (result.Succeeded)
         {
             return Redirect(returnUrl ?? "/");

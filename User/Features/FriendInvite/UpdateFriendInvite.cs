@@ -60,6 +60,6 @@ internal sealed class UpdateOrderCommandHandler : IRequestHandler<UpdateFriendIn
         var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
         var newEntity = _mapper.Map(request, entity);
         var updatedEntity = await _repository.UpdateAsync(newEntity, cancellationToken);
-        return _mapper.Map<User.Domain.FriendInvite, FriendInviteDto>(updatedEntity);
+        return _mapper.Map<Domain.FriendInvite, FriendInviteDto>(updatedEntity);
     }
 }

@@ -4,7 +4,7 @@ using Common.Mappings;
 using FluentValidation;
 using MediatR;
 using User.Features.Group.Dtos;
-using User.Features.Invite.Dtos;
+using User.Features.GroupInvite.Dtos;
 
 namespace User.Features.Group;
 
@@ -27,7 +27,7 @@ public class UpdateGroupRequestBody
     public int MaxNumberOfPeople { get; set; }
     public String AdminUserId { get; set; } = null!;
     
-    public List<InviteDto> Invites { get; set; } = new List<InviteDto>();
+    public List<GroupInviteDto> Invites { get; set; } = new List<GroupInviteDto>();
 }
 
 public class UpdateGroupCommandValidator : AbstractValidator<UpdateGroupCommand>

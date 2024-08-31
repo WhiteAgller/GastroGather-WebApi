@@ -12,11 +12,10 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name).HasMaxLength(25).IsRequired();
-        builder.Property(x => x.MaxNumberOfPeople).HasDefaultValue(1);
-        builder.Property(x => x.AdminUserId).IsRequired();
+        builder.Property(x => x.AdminUserName).IsRequired();
 
         builder
-            .HasMany(x => x.Invites)
+            .HasMany(x => x.GroupInvites)
             .WithOne(x => x.Group)
             .HasForeignKey(x => x.GroupId);
 
