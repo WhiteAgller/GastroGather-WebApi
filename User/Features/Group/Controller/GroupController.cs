@@ -27,7 +27,7 @@ public class GroupController : ApiControllerBase
         return await Mediator.Send(query);
     }
     
-    [HttpGet("byUserId")]
+    [HttpGet("GetAllGroups")]
     public async Task<ActionResult<PaginatedList<GroupDto>>> GetByUserId([FromQuery] GetGroupsByUserIdQuery query)
     {
         return await Mediator.Send(query);

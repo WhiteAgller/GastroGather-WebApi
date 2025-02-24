@@ -28,7 +28,7 @@ public class AccountController : Controller
         {
             var randomNumber = RandomNumberGenerator.GetInt32(1000, 9999);
             var name = $"{model.Username}#{randomNumber}";
-            user = new User.Domain.User { Id = name, UserName = $"{model.Username}#{randomNumber}", Email = model.Email};
+            user = new User.Domain.User { Id = name, UserName = $"{model.Username}", Email = model.Email};
             userNameAlreadyExists = _userManager.FindByNameAsync(user.UserName) != null;
             numberOfAttempts++;
         }
